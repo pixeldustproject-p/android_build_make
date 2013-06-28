@@ -592,7 +592,7 @@ function print_lunch_menu()
     do
         echo " $i. $choice "
         i=$(($i+1))
-    done
+    done | column
 
     if [ "z${CUSTOM_DEVICES_ONLY}" != "z" ]; then
        echo " "
