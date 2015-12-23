@@ -341,29 +341,19 @@ function settitle()
     fi
 }
 
-function addcompletions()
+function check_bash_version()
 {
-    local T dir f
-
     # Keep us from trying to run in something that isn't bash.
     if [ -z "${BASH_VERSION}" ]; then
-        return
+        return 1
     fi
-
     # Keep us from trying to run in bash that's too old.
-    if [ ${BASH_VERSINFO[0]} -lt 3 ]; then
-        return
-    fi
-
-    dir="sdk/bash_completion vendor/pixeldust/build/bash_completion"
-    if [ -d ${dir} ]; then
-        for f in `/bin/ls ${dir}/[a-z]*.bash 2> /dev/null`; do
-            echo "including $f"
-            . $f
-        done
+    if [ "${BASH_VERSINFO[0]}" -lt 4 ] ; then
+        return 2
     fi
 
     complete -C "bit --tab" bit
+    return 0
 }
 
 function choosetype()
@@ -1663,4 +1653,15 @@ do
 done
 unset f
 
-addcompletions
+# Add completions
+check_bash_version && {
+    dirs="sdk/bash_completion vendor/pixeldust/build/bash_completion"
+    for dir in $dirs; do
+    if [ -d ${dir} ]; then
+        for f in `/bin/ls ${dir}/[a-z]*.bash 2> /dev/null`; do
+            echo "including $f"
+            . $f
+        done
+    fi
+    done
+}
