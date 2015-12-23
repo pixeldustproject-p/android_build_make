@@ -26,6 +26,7 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - sepgrep:   Greps on all local sepolicy files.
 - sgrep:     Greps on all local source files.
 - godir:     Go to the directory containing a file.
+- mka:      Builds using SCHED_BATCH on all processors
 
 Environment options:
 - SANITIZE_HOST: Set to 'true' to use ASAN for all host modules. Note that
@@ -153,6 +154,22 @@ function check_variant()
         fi
     done
     return 1
+}
+
+function mka() {
+   local T=$(gettop)
+   if [ "$T" ]; then
+       case `uname -s` in
+           Darwin)
+               make -C $T -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
+               ;;
+           *)
+               mk_timer schedtool -B -n 1 -e ionice -n 1 make -C $T -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+               ;;
+       esac
+     else
+       echo "Couldn't locate the top of the tree.  Try setting TOP."
+   fi
 }
 
 function setpaths()
