@@ -549,7 +549,8 @@ def GetBootableImage(name, prebuilt_name, unpack_dir, tree_subdir,
   custom_bootimg_mk = os.getenv('MKBOOTIMG')
   if custom_bootimg_mk:
     bootimage_path = os.path.join(os.getenv('OUT'), "boot.img")
-    os.mkdir(prebuilt_dir)
+    if not os.path.exists(prebuilt_dir):
+      os.mkdir(prebuilt_dir)
     shutil.copyfile(bootimage_path, prebuilt_path)
   if os.path.exists(prebuilt_path):
     print("using prebuilt %s from BOOTABLE_IMAGES..." % (prebuilt_name,))
@@ -1779,12 +1780,16 @@ class BlockDifference(object):
 DataImage = blockimgdiff.DataImage
 
 # map recovery.fstab's fs_types to mount/format "partition types"
-PARTITION_TYPES = {
-    "ext4": "EMMC",
-    "emmc": "EMMC",
-    "f2fs": "EMMC",
-    "squashfs": "EMMC"
-}
+PARTITION_TYPES = { "bml": "BML",
+                    "ext2": "EMMC",
+                    "ext3": "EMMC",
+                    "ext4": "EMMC",
+                    "emmc": "EMMC",
+                    "mtd": "MTD",
+                    "f2fs": "EMMC",
+                    "yaffs2": "MTD",
+                    "vfat": "EMMC",
+                    "squashfs": "EMMC" }
 
 def GetTypeAndDevice(mount_point, info):
   fstab = info["fstab"]
