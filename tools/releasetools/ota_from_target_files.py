@@ -825,10 +825,15 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   script.AppendExtra("ifelse(is_mounted(\"/system\"), unmount(\"/system\"));")
 
-  # Dump fingerprints
-  script.Print("Target: {}".format(target_info.fingerprint))
-
   device_specific.FullOTA_InstallBegin()
+
+  script.Print(" ")
+  script.Print(" ____  _          _   ____            _   ")
+  script.Print("|  _ \(_)_  _____| | |  _ \ _   _ ___| |_ ")
+  script.Print("| |_) | \ \/ / _ \ | | | | | | | / __| __|")
+  script.Print("|  __/| |>  <  __/ | | |_| | |_| \__ \ |_ ")
+  script.Print("|_|   |_/_/\_\___|_| |____/ \__,_|___/\__|")
+  script.Print(" ")
 
   if OPTIONS.backuptool:
     script.Mount("/system", OPTIONS.mount_by_label)
@@ -886,7 +891,7 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
     script.RunBackup("restore")
 
   script.ShowProgress(0.2, 10)
-  script.Print("Flashing boot.img")
+  script.Print("Flashing Kernel..")
   bootpartition = "/boot" if OPTIONS.override_boot_partition == "" else OPTIONS.override_boot_partition
   script.WriteRawImage(bootpartition, "boot.img")
 
