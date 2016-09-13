@@ -149,6 +149,15 @@ PRODUCT_PACKAGES += \
     fsck.f2fs \
     make_f2fs \
 
+# NTFS and ExFAT
+PRODUCT_PACKAGES += \
+    fsck.exfat \
+    fsck.ntfs \
+    mke2fs \
+    mkfs.exfat \
+    mkfs.ntfs \
+    mount.ntfs
+
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     ro.zygote=zygote32
 PRODUCT_COPY_FILES += \
