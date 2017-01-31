@@ -374,7 +374,7 @@ else
 OUT_DIR := $(shell readlink -f .)/out
 endif
 else
-OUT_DIR := $(OUT_DIR_COMMON_BASE)/$(notdir $(PWD))
+OUT_DIR := $(OUT_DIR_COMMON_BASE:/=)/$(notdir $(PWD))
 endif
 endif
 
