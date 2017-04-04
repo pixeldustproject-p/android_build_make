@@ -361,6 +361,8 @@ endif
 			TARGET_CPU_ABI="$(TARGET_CPU_ABI)" \
 			TARGET_CPU_ABI2="$(TARGET_CPU_ABI2)" \
 			TARGET_AAPT_CHARACTERISTICS="$(TARGET_AAPT_CHARACTERISTICS)" \
+			TARGET_UNIFIED_DEVICE="$(TARGET_UNIFIED_DEVICE)" \
+			TARGET_SETS_FSTAB="$(TARGET_SETS_FSTAB)" \
 	        bash $(BUILDINFO_SH) >> $@
 	$(hide) $(foreach file,$(system_prop_file), \
 		if [ -f "$(file)" ]; then \
@@ -2891,6 +2893,33 @@ else
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BROTLI)
 endif
 
+ifneq ($(PIXELDUST_BUILD),)
+    $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := true
+else
+     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
+endif
+
+ifeq ($(TARGET_OTA_ASSERT_DEVICE),)
+    $(INTERNAL_OTA_PACKAGE_TARGET): override_device := auto
+else
+    $(INTERNAL_OTA_PACKAGE_TARGET): override_device := $(TARGET_OTA_ASSERT_DEVICE)
+endif
+
+ifeq ($(TARGET_UNIFIED_DEVICE),)
+    $(INTERNAL_OTA_PACKAGE_TARGET): override_prop := false
+else
+    $(INTERNAL_OTA_PACKAGE_TARGET): override_prop := true
+endif
+
+ifneq ($(TARGET_SETS_FSTAB),)
+    $(INTERNAL_OTA_PACKAGE_TARGET): mount_by_label := true
+else
+    $(INTERNAL_OTA_PACKAGE_TARGET): mount_by_label := false
+    ifeq ($(TARGET_OTA_ASSERT_DEVICE),)
+        $(INTERNAL_OTA_PACKAGE_TARGET): override_device := $(TARGET_DEVICE)
+    endif
+endif
+
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 		build/make/tools/releasetools/ota_from_target_files
 	@echo "Package OTA: $@"
@@ -2900,13 +2929,19 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   --extracted_input_target_files $(patsubst %.zip,%,$(BUILT_TARGET_FILES_PACKAGE)) \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
+	   --backup=$(backuptool) \
+	   --override_device=$(override_device) \
+	   --override_prop=$(override_prop) \
+	   --mount_by_label=$(mount_by_label) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
+	   $(TARGET_RELEASETOOL_OTA_FROM_TARGET_ADDITIONAL_ARGS) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
  PD_TARGET_PACKAGE := $(PRODUCT_OUT)/$(PIXELDUST_VERSION).zip
 .PHONY: otapackage pixeldust
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-pixeldust: otapackage
+pixeldust:PIXELDUST_BUILD := true
+        otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(PD_TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(PD_TARGET_PACKAGE) > $(PD_TARGET_PACKAGE).md5sum
 	$(hide) ./vendor/pixeldust/tools/pd.sh
