@@ -2559,6 +2559,7 @@ BUILT_TARGET_FILES_PACKAGE := $(intermediates)/$(name).zip
 ifneq ($(CUSTOM_BUILD),)
   $(shell echo "CUSTOM_BUILD=$(CUSTOM_BUILD)" > $(PRODUCT_OUT)/signing.props)
   $(shell echo "TARGET_OTA_ASSERT_DEVICE=$(TARGET_OTA_ASSERT_DEVICE)" >> $(PRODUCT_OUT)/signing.props)
+  $(shell echo "TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT=$(TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT)" >> $(PRODUCT_OUT)/signing.props)
   $(shell echo "TARGET_UNIFIED_DEVICE=$(TARGET_UNIFIED_DEVICE)" >> $(PRODUCT_OUT)/signing.props)
   $(shell echo "TARGET_DEVICE=$(TARGET_DEVICE)" >> $(PRODUCT_OUT)/signing.props)
   $(shell echo "TARGET_SETS_FSTAB=$(TARGET_SETS_FSTAB)" >> $(PRODUCT_OUT)/signing.props)
