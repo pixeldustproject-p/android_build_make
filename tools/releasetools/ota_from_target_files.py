@@ -92,10 +92,6 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -e  (--extra_script)  <file>
       Insert the contents of file at the end of the update script.
 
-  --backup <boolean>
-      Enable or disable the execution of backuptool.sh.
-      Disabled by default.
-
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
 
@@ -208,7 +204,6 @@ OPTIONS.extra_script = None
 OPTIONS.worker_threads = multiprocessing.cpu_count() // 2
 if OPTIONS.worker_threads == 0:
   OPTIONS.worker_threads = 1
-OPTIONS.backuptool = False
 OPTIONS.override_device = 'auto'
 OPTIONS.override_prop = False
 OPTIONS.override_boot_partition = ''
@@ -838,12 +833,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("|_|   |_/_/\_\___|_| |____/ \__,_|___/\__|")
   script.Print(" ")
 
-  if OPTIONS.backuptool:
-    script.Mount("/system", OPTIONS.mount_by_label)
-    script.RunBackup("backup")
-    if not OPTIONS.mount_by_label:
-      script.Unmount("/system")
-
   script.ShowProgress(0.5, 0)
 
   if OPTIONS.wipe_user_data:
@@ -888,10 +877,6 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   common.CheckSize(boot_img.data, "boot.img", target_info)
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
-
-  if OPTIONS.backuptool:
-    script.ShowProgress(0.2, 10)
-    script.RunBackup("restore")
 
   script.ShowProgress(0.2, 10)
   script.Print("Flashing Kernel..")
@@ -1865,8 +1850,6 @@ def main(argv):
       else:
         raise ValueError("Cannot parse value %r for option %r - only "
                          "integers are allowed." % (a, o))
-    elif o in ("--backup"):
-      OPTIONS.backuptool = bool(a.lower() == 'true')
     elif o in ("--override_device"):
       OPTIONS.override_device = a
     elif o in ("--override_prop"):
@@ -1919,7 +1902,6 @@ def main(argv):
                                  "override_timestamp",
                                  "extra_script=",
                                  "worker_threads=",
-                                 "backup=",
                                  "override_device=",
                                  "override_prop=",
                                  "override_boot_partition=",
