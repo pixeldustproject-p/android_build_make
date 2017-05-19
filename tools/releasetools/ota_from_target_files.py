@@ -92,6 +92,10 @@ Usage:  ota_from_target_files [flags] input_target_files output_ota_package
   -e  (--extra_script)  <file>
       Insert the contents of file at the end of the update script.
 
+  --backup <boolean>
+      Enable or disable the execution of backuptool.sh.
+      Disabled by default.
+
   --override_device <device>
       Override device-specific asserts. Can be a comma-separated list.
 
@@ -204,6 +208,7 @@ OPTIONS.extra_script = None
 OPTIONS.worker_threads = multiprocessing.cpu_count() // 2
 if OPTIONS.worker_threads == 0:
   OPTIONS.worker_threads = 1
+OPTIONS.backuptool = False
 OPTIONS.override_device = 'auto'
 OPTIONS.override_prop = False
 OPTIONS.override_boot_partition = ''
@@ -734,6 +739,15 @@ def AddCompatibilityArchiveIfTrebleEnabled(target_zip, output_zip, target_info,
   AddCompatibilityArchive(system_updated, vendor_updated)
 
 
+def CopyInstallTools(output_zip):
+  oldcwd = os.getcwd()
+  os.chdir(os.getenv('OUT'))
+  for root, subdirs, files in os.walk("install"):
+    for f in files:
+      p = os.path.join(root, f)
+      output_zip.write(p, p)
+  os.chdir(oldcwd)
+
 def WriteFullOTAPackage(input_zip, output_file):
   target_info = BuildInfo(OPTIONS.info_dict, OPTIONS.oem_dicts)
 
@@ -833,6 +847,16 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.Print("|_|   |_/_/\_\___|_| |____/ \__,_|___/\__|")
   script.Print(" ")
 
+  CopyInstallTools(output_zip)
+  script.UnpackPackageDir("install", "/tmp/install")
+  script.SetPermissionsRecursive("/tmp/install", 0, 0, 0755, 0644, None, None)
+  script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0755, 0755, None, None)
+
+  if OPTIONS.backuptool:
+    script.Mount("/system")
+    script.RunBackup("backup")
+    script.Unmount("/system")
+
   script.ShowProgress(0.5, 0)
 
   if OPTIONS.wipe_user_data:
@@ -875,7 +899,13 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
 
   AddCompatibilityArchiveIfTrebleEnabled(input_zip, output_zip, target_info)
 
+  if OPTIONS.backuptool:
+    script.Mount("/system")
+    script.RunBackup("restore")
+    script.Unmount("/system")
+
   common.CheckSize(boot_img.data, "boot.img", target_info)
+
   common.ZipWriteStr(output_zip, "boot.img", boot_img.data)
 
   script.ShowProgress(0.2, 10)
@@ -1850,6 +1880,8 @@ def main(argv):
       else:
         raise ValueError("Cannot parse value %r for option %r - only "
                          "integers are allowed." % (a, o))
+    elif o in ("--backup"):
+      OPTIONS.backuptool = bool(a.lower() == 'true')
     elif o in ("--override_device"):
       OPTIONS.override_device = a
     elif o in ("--override_prop"):
@@ -1902,6 +1934,7 @@ def main(argv):
                                  "override_timestamp",
                                  "extra_script=",
                                  "worker_threads=",
+                                 "backup=",
                                  "override_device=",
                                  "override_prop=",
                                  "override_boot_partition=",
