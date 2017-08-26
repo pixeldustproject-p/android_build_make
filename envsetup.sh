@@ -616,7 +616,7 @@ function brunch()
 
 function breakfast()
 {
-    target=$1
+    target=pixeldust_$1
     CUSTOM_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     for f in `/bin/ls vendor/pixeldust/vendorsetup.sh 2> /dev/null`
