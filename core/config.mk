@@ -1085,12 +1085,12 @@ dont_bother_goals := out \
     vbmetaimage-nodeps \
     product-graph dump-products
 
+# Rules for QCOM targets
+include $(BUILD_SYSTEM)/qcom_target.mk
+
 ifeq ($(CALLED_FROM_SETUP),true)
 include $(BUILD_SYSTEM)/ninja_config.mk
 include $(BUILD_SYSTEM)/soong_config.mk
 endif
-
-# Rules for QCOM targets
-include $(BUILD_SYSTEM)/qcom_target.mk
 
 include $(BUILD_SYSTEM)/dumpvar.mk
