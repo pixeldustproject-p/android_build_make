@@ -631,7 +631,7 @@ LEX := prebuilts/misc/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/flex/flex-2.5.39
 # BISON_PKGDATADIR.
 BISON_PKGDATADIR := $(PWD)/prebuilts/build-tools/common/bison
 ifeq ($(USE_HOST_BISON),yes)
-BISON := bison
+BISON := $(HOST_OUT_EXECUTABLES)/bison
 else
 BISON := prebuilts/build-tools/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/bin/bison
 endif
