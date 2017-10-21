@@ -308,6 +308,7 @@ function setpaths()
     unset ANDROID_PRODUCT_OUT
     export ANDROID_PRODUCT_OUT=$(get_abs_build_var PRODUCT_OUT)
     export OUT=$ANDROID_PRODUCT_OUT
+    export HOST_OUT_EXECUTABLES=$(get_abs_build_var HOST_OUT_EXECUTABLES)
 
     unset ANDROID_HOST_OUT
     export ANDROID_HOST_OUT=$(get_abs_build_var HOST_OUT)
