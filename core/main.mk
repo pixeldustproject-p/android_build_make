@@ -280,8 +280,12 @@ ifneq (,$(user_variant))
   endif
 
   ifeq ($(user_variant),userdebug)
+    # Allow ADB logging during boot
+    ADDITIONAL_DEFAULT_PROPERTIES += \
+        ro.adb.secure=0 \
+        ro.secure=0 \
+        persist.service.adb.enable=1
     # Pick up some extra useful tools
-    ADDITIONAL_DEFAULT_PROPERTIES += ro.secure=0
     tags_to_install += debug
   else
     # Disable debugging in plain user builds.
