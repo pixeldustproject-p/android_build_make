@@ -235,8 +235,7 @@ OPTIONS.skip_postinstall = False
 
 METADATA_NAME = 'META-INF/com/android/metadata'
 POSTINSTALL_CONFIG = 'META/postinstall_config.txt'
-UNZIP_PATTERN = ['IMAGES/*', 'META/*']
-
+UNZIP_PATTERN = ['IMAGES/*', 'META/*', 'INSTALL/*', 'SYSTEM/build.prop']
 
 class BuildInfo(object):
   """A class that holds the information for a given build.
