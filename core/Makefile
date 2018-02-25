@@ -3092,6 +3092,16 @@ else
     endif
 endif
 
+ifndef ANDROID_COMPILE_WITH_BROTLI
+    ANDROID_COMPILE_WITH_BROTLI := true
+endif
+
+ifeq ($(ANDROID_COMPILE_WITH_BROTLI),true)
+    $(INTERNAL_OTA_PACKAGE_TARGET): brotli := true
+else
+    $(INTERNAL_OTA_PACKAGE_TARGET): brotli := false
+endif
+
 ifneq ($(TARGET_SETS_FSTAB),)
     $(INTERNAL_OTA_PACKAGE_TARGET): mount_by_label := true
 else
@@ -3108,6 +3118,7 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
 	   --backup=$(backuptool) \
+	   --brotli=$(brotli) \
 	   --override_device=$(override_device) \
 	   --override_prop=$(override_prop) \
 	   --mount_by_label=$(mount_by_label) \
