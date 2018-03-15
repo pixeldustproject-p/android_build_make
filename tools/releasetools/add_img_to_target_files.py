@@ -420,6 +420,16 @@ def AddVBMeta(output_zip, partitions):
   assert p.returncode == 0, "avbtool make_vbmeta_image failed"
   img.Write()
 
+def AddDisabledVBMeta(output_zip, prefix="IMAGES/"):
+  """Create a VBMeta image and store it in output_zip."""
+  img = OutputFile(output_zip, OPTIONS.input_tmp, prefix, "vbmeta.img")
+  avbtool = os.getenv('AVBTOOL') or OPTIONS.info_dict["avb_avbtool"]
+  cmd = [avbtool, "make_vbmeta_image", "--flag", "2", "--padding_size", "4096", "--output", img.name]
+
+  p = common.Run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  p.communicate()
+  assert p.returncode == 0, "avbtool make_vbmeta_image failed"
+  img.Write()
 
 def AddPartitionTable(output_zip):
   """Create a partition table image and store it in output_zip."""
@@ -793,6 +803,10 @@ def AddImagesToTargetFiles(filename):
   if OPTIONS.info_dict.get("avb_enable") == "true":
     banner("vbmeta")
     AddVBMeta(output_zip, partitions)
+
+  if OPTIONS.info_dict.get("avb_disabled_vbmeta") == "true":
+    banner("vbmeta")
+    AddDisabledVBMeta(output_zip)
 
   banner("radio")
   ab_partitions_txt = os.path.join(OPTIONS.input_tmp, "META",
