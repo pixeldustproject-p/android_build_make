@@ -73,7 +73,6 @@ PRODUCT_PACKAGES += \
     lmkd \
     logcat \
     lshal \
-    recovery \
     service \
     servicemanager \
     shell_and_utilities \
