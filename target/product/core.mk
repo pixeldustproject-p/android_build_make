@@ -35,6 +35,7 @@ PRODUCT_PACKAGES += \
     InputDevices \
     KeyChain \
     Keyguard \
+    LatinIME \
     ManagedProvisioning \
     MtpDocumentsProvider \
     PacProcessor \
