@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2009 The Android Open Source Project
+# Copyright (C) 2018 The Android Open-Source Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
 # limitations under the License.
 #
 
-# NFC:
-#   Provide default libnfc-nci.conf file for devices that does not have one in
-#   vendor/etc because aosp system image (of aosp_$arch products) is going to
-#   be used as GSI.
-#   May need to remove the following for newly launched devices in P since this
-#   NFC configuration file should be in vendor/etc, instead of system/etc
-PRODUCT_COPY_FILES += \
-    device/generic/common/nfc/libnfc-nci.conf:system/etc/libnfc-nci.conf
+# PRODUCT_PROPERTY_OVERRIDES cannot be used here because sysprops will be at
+# /vendor/[build|default].prop when build split is on. In order to have sysprops
+# on the generic system image, place them in build/make/target/board/
+# treble_system.prop.
+
+include build/make/target/product/treble_common_32.mk
+
+PRODUCT_NAME := aosp_arm_64b_ab
+PRODUCT_DEVICE := generic_arm_64b_ab
+PRODUCT_BRAND := Android
+PRODUCT_MODEL := AOSP on ARM32
