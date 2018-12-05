@@ -856,9 +856,14 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   script.SetPermissionsRecursive("/tmp/install/bin", 0, 0, 0755, 0755, None, None)
 
   if OPTIONS.backuptool:
+    is_system_as_root = script.fstab["/system"].mount_point == "/"
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/system"
     script.Mount("/system")
-    script.RunBackup("backup")
+    script.RunBackup("backup", "/system/system" if is_system_as_root else "/system")
     script.Unmount("/system")
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/"
 
   script.ShowProgress(0.5, 0)
 
@@ -903,9 +908,14 @@ else if get_stage("%(bcb_dev)s") == "3/3" then
   AddCompatibilityArchiveIfTrebleEnabled(input_zip, output_zip, target_info)
 
   if OPTIONS.backuptool:
+    is_system_as_root = script.fstab["/system"].mount_point == "/"
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/system"
     script.Mount("/system")
-    script.RunBackup("restore")
+    script.RunBackup("restore", "/system/system" if is_system_as_root else "/system")
     script.Unmount("/system")
+    if is_system_as_root:
+      script.fstab["/system"].mount_point = "/"
 
   common.CheckSize(boot_img.data, "boot.img", target_info)
 
