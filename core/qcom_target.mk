@@ -141,6 +141,8 @@ $(call ril-set-path-variant,ril)
 $(call wlan-set-path-variant,wlan)
 $(call bt-vendor-set-path-variant,bt)
 
+PRODUCT_CFI_INCLUDE_PATHS += \
+    hardware/qcom/wlan-caf/qcwcn/wpa_supplicant_8_lib
 endif
 
 ifeq ($(call is-board-platform-in-list, $(QCOM_BOARD_PLATFORMS)),true)
