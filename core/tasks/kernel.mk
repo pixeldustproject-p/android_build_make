@@ -372,7 +372,7 @@ $(TARGET_PREBUILT_INT_KERNEL): $(TARGET_KERNEL_MODULES)
 # as a part of the uapi system (commit d183e6f570f3).
 -include $(KERNEL_HEADERS_INSTALL_DEPS)
 $(KERNEL_HEADERS_INSTALL_DEPS):
-	@echo -e ${CL_GRN}"Building Kernel Headers"${CL_RST}
+	echo -e ${CL_GRN}"Building Kernel Headers"${CL_RST}
 	$(hide) mkdir -p $(KERNEL_OUT)
 	$(hide) rm -f $@
 	$(hide) $(PATH_OVERRIDE) $(MAKE) $(MAKE_FLAGS) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) headers_install
