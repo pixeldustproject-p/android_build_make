@@ -2897,7 +2897,7 @@ $(BUILT_TARGET_FILES_PACKAGE): \
 		$(BUILT_VENDOR_MANIFEST) \
 		$(BUILT_VENDOR_MATRIX) \
 		| $(ACP)
-	@echo -e ${CL_YLW}"Package target files:"${CL_RST}" $@"
+	echo -e ${CL_YLW}"Package target files:"${CL_RST}" $@"
 	$(call create-system-vendor-symlink)
 	$(call create-system-product-symlink)
 	$(hide) rm -rf $@ $@.list $(zip_root)
