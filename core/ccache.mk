@@ -36,11 +36,12 @@ ifneq ($(filter-out false,$(USE_CCACHE)),)
   # See http://petereisentraut.blogspot.com/2011/09/ccache-and-clang-part-2.html
   export CCACHE_CPP2 := true
 
-  ifeq ($(USE_SYSTEM_CCACHE),)
+  # Detect if the system already has ccache installed to use instead of the prebuilt
+  ccache := $(shell command -v ccache)
+
+  ifeq ($(ccache),)
     CCACHE_HOST_TAG := $(HOST_PREBUILT_TAG)
     ccache := prebuilts/misc/$(CCACHE_HOST_TAG)/ccache/ccache
-  else
-    ccache := $(shell which ccache)
   endif
 
   # Check that the executable is here.
